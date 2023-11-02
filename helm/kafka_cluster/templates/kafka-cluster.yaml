@@ -1,0 +1,73 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: {{ .Values.cluster_name }}
+spec:
+  kafka:
+    version: {{ .Values.kafka_version }}
+    replicas: {{ .Values.kafka_replicas }}
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    readinessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    config:
+      offsets.topic.replication.factor: {{ .Values.offsets_topic_replication_factor }}
+      transaction.state.log.replication.factor: {{ .Values.transaction_state_log_replication_factor }}
+      transaction.state.log.min.isr: {{ .Values.transaction_state_log_min_isr }}
+      default.replication.factor: {{ .Values.default_replication_factor }}
+      min.insync.replicas: {{ .Values.min_insync_replicas }}
+      inter.broker.protocol.version: "3.5"
+    storage:
+      type: jbod
+      volumes:
+      - id: 0
+        type: persistent-claim
+        size: {{ .Values.kafka_storage_size }}
+        deleteClaim: false
+    {{ if .Values.enable_jmx_prometheus_exporter }}
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: kafka-metrics.yaml
+    {{ end }}
+  {{ if .Values.enable_kafka_exporter }}
+  kafkaExporter:
+    topicRegex: ".*"
+    groupRegex: ".*"
+  {{ end }}
+  zookeeper:
+    replicas: {{ .Values.zookeeper_replicas }}
+    readinessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    storage:
+      type: persistent-claim
+      size: {{ .Values.zookeeper_storage_size }}
+      deleteClaim: false
+    {{ if .Values.enable_jmx_prometheus_exporter }}
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: zookeeper-metrics
+          key: zookeeper-metrics.yaml
+    {{ end }}
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
