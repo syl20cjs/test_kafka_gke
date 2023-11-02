@@ -43,7 +43,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: prometheus-server
-    namespace: {{ .Values.monitoring_namespace. }}
+    namespace: {{ .Values.monitoring_namespace }}
 
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -52,7 +52,7 @@ metadata:
   name: prometheus
   labels:
     app: strimzi
-  namespace: {{ .Values.monitoring_namespace. }}
+  namespace: {{ .Values.monitoring_namespace }}
 spec:
   replicas: 1
   serviceAccountName: prometheus-server
