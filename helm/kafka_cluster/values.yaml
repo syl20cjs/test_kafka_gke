@@ -1,0 +1,17 @@
+# kafka
+kafka_replicas: 3
+cluster_name: kafka-cluster
+kafka_version: 3.5.1
+offsets_topic_replication_factor: 3
+transaction_state_log_replication_factor: 3
+transaction_state_log_min_isr: 2
+default_replication_factor: 3
+min_insync_replicas: 2
+inter_broker_protocol_version: 3.5
+kafka_storage_size: 20Gi
+enable_jmx_prometheus_exporter: true
+enable_kafka_exporter: true
+
+# zookeeper
+zookeeper_replicas: 3
+zookeeper_storage_size: 20Gi
