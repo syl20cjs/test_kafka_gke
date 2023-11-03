@@ -45,8 +45,16 @@ spec:
     {{ end }}
   {{ if .Values.enable_kafka_exporter }}
   kafkaExporter:
-    topicRegex: ".*"
     groupRegex: ".*"
+    topicRegex: ".*"
+    logging: debug
+    enableSaramaLogging: true
+    readinessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
   {{ end }}
   zookeeper:
     replicas: {{ .Values.zookeeper_replicas }}
